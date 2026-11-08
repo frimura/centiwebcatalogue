@@ -30,12 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function closeOnboarding() {
     overlay.classList.add('hidden');
-
-    try {
-      localStorage.setItem('centiOnboardingSeen', '1');
-    } catch (error) {
-      // Continue even if local storage is unavailable.
-    }
   }
 
   next.addEventListener('click', () => {
@@ -52,13 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   close.addEventListener('click', closeOnboarding);
 
-  try {
-    if (!localStorage.getItem('centiOnboardingSeen')) {
-      overlay.classList.remove('hidden');
-    }
-  } catch (error) {
-    overlay.classList.remove('hidden');
-  }
+  // Always show the onboarding when the page loads.
+  overlay.classList.remove('hidden');
 
   showSlide(0);
 });
