@@ -46,6 +46,97 @@
     <div id="emptyState" class="empty hidden"><div class="empty-icon">⌕</div><strong>No products found</strong><span>Try another SKU or product name.</span></div>
   </main>
 
+<!-- FIRST-VISIT ONBOARDING -->
+<div id="onboardingOverlay" class="onboarding-overlay hidden">
+  <section class="onboarding-panel" role="dialog"
+           aria-modal="true" aria-label="Cara menggunakan katalog">
+
+    <button id="onboardingClose" class="onboarding-close"
+            aria-label="Close">×</button>
+
+    <div class="onboarding-slides">
+
+      <!-- SLIDE 1 -->
+      <div class="onboarding-slide active">
+        <div class="onboarding-intro">
+          <p>
+            Halaman ini merupakan katalog lengkap produk yang pernah
+            kami jual di CENTI STORE.
+          </p>
+
+          <p>
+            Untuk stok dan pembelian dapat hubungi kami melalui WA
+          </p>
+
+          <a href="https://wa.me/6287787888865" target="_blank">
+            087877888865
+          </a>
+        </div>
+      </div>
+
+      <!-- SLIDE 2 -->
+      <div class="onboarding-slide">
+        <img src="assets/onboarding-add.png"
+             alt="Product quantity selector">
+
+        <h3>Tambahkan Produk</h3>
+        <p>
+          Pilih produk yang ingin dipesan, tentukan jumlahnya,
+          lalu tekan Add to Cart.
+        </p>
+      </div>
+
+      <!-- SLIDE 3 -->
+      <div class="onboarding-slide">
+        <img src="assets/onboarding-cart.png"
+             alt="Shopping cart">
+
+        <h3>Kirim Format Order</h3>
+        <p>
+          Setelah selesai memilih produk, tekan Tanyakan CS.
+          Format pesanan otomatis akan dikirimkan ke WhatsApp kami.
+        </p>
+      </div>
+
+      <!-- SLIDE 4 -->
+      <div class="onboarding-slide">
+        <div class="stock-confirmation">
+          <div class="stock-chat">
+            <span>Customer Service</span>
+            <div>Pesanan Anda sedang kami cek.</div>
+            <div class="stock-reply">
+              Stok sudah kami periksa. Kami akan konfirmasi
+              ketersediaannya melalui WhatsApp.
+              <small>✓✓</small>
+            </div>
+          </div>
+          <div class="stock-check">✓</div>
+        </div>
+
+        <h3>Konfirmasi Stok</h3>
+        <p>
+          Stok akan kami cek dan kami konfirmasi melalui WA.
+          Tunggu konfirmasi dari tim kami sebelum melakukan pembayaran.
+        </p>
+      </div>
+
+    </div>
+
+    <div class="onboarding-pagination">
+      <span class="onboarding-dot active"></span>
+      <span class="onboarding-dot"></span>
+      <span class="onboarding-dot"></span>
+      <span class="onboarding-dot"></span>
+    </div>
+
+    <div class="onboarding-controls">
+      <button id="onboardingPrev" type="button">Kembali</button>
+      <button id="onboardingNext" type="button">Selanjutnya</button>
+    </div>
+
+  </section>
+</div>
+
   
   <!-- PRODUCT QUANTITY SELECTOR -->
   <div id="quantityOverlay" class="overlay hidden"></div>
