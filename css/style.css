@@ -59,9 +59,10 @@ button:disabled {
    2. TOP HEADER & BRAND
    ========================================================= */
 
+
 .topbar {
-  height: 68px;
-  padding: 0 max(16px, calc((100vw - 900px) / 2));
+  min-height: 105px;
+  padding: 10px max(16px, calc((100vw - 900px) / 2));
 
   position: sticky;
   top: 0;
@@ -69,7 +70,7 @@ button:disabled {
 
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 
   background: #111827;
   color: var(--white);
@@ -77,34 +78,58 @@ button:disabled {
 
 .brand {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+
+  width: min(100%, 360px);
+  margin: 0 auto;
 }
 
-.brand-mark {
-  width: 38px;
-  height: 38px;
+.brand-logo {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
 
-  display: grid;
-  place-items: center;
+.brand-subtitle {
+  width: 100%;
+  margin-top: 4px;
 
-  border-radius: 12px;
-  background: var(--green);
-
-  font-size: 21px;
+  color: #fff;
+  text-align: center;
+  font-size: 19px;
   font-weight: 900;
+  letter-spacing: 5px;
+  line-height: 1.2;
 }
 
-.brand strong {
-  display: block;
-  font-size: 13px;
-  letter-spacing: 1px;
+.header-actions {
+  position: absolute;
+  right: max(16px, calc((100vw - 900px) / 2));
+  top: 50%;
+  transform: translateY(-50%);
 }
 
-.brand small {
-  display: block;
-  color: #aab3c2;
-  font-size: 11px;
+@media (max-width: 480px) {
+  .topbar {
+    min-height: 85px;
+    padding: 8px 12px;
+  }
+
+  .brand {
+    width: min(75%, 260px);
+  }
+
+  .brand-subtitle {
+    font-size: 15px;
+    letter-spacing: 4px;
+  }
+
+  .header-actions {
+    right: 10px;
+  }
 }
 
 .cart-top {
