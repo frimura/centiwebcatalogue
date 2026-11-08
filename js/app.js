@@ -319,7 +319,7 @@ function normalize(rows) {
         columns.category >= 0 ? row[columns.category] || '' : ''
       ).trim()
     }))
-        }))
+  
     .filter(product => product.sku && !isSkuMasked(product.sku));
 }
 
