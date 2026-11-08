@@ -604,6 +604,90 @@ function shuffleByCategory(items) {
 }
 
 
+/* =========================================================
+   FEATURED PRODUCT CAROUSELS
+   ========================================================= */
+
+const FEATURED_INTERVAL = 25;
+const FEATURED_COUNT = 5;
+
+let featuredProductPool = [];
+let featuredProductCursor = 0;
+
+function resetFeaturedProducts() {
+  featuredProductPool = shuffleProducts(
+    products.filter(product => product.sku)
+  );
+
+  featuredProductCursor = 0;
+}
+
+function getFeaturedProducts() {
+  if (!featuredProductPool.length) return [];
+
+  const selected = [];
+
+  for (let i = 0; i < FEATURED_COUNT; i++) {
+    if (featuredProductCursor >= featuredProductPool.length) {
+      // Start a new random cycle only after the pool is exhausted.
+      featuredProductPool = shuffleProducts(
+        products.filter(product => product.sku)
+      );
+      featuredProductCursor = 0;
+    }
+
+    const product = featuredProductPool[featuredProductCursor++];
+    if (product) selected.push(product);
+  }
+
+  return selected;
+}
+
+function createFeaturedCarousel() {
+  const featured = getFeaturedProducts();
+  if (!featured.length) return '';
+
+  return `
+    <section class="featured-carousel">
+      <div class="featured-carousel-heading">
+        <strong>Produk Pilihan</strong>
+        <span>Jelajahi produk lainnya</span>
+      </div>
+
+      <div class="featured-carousel-track">
+        ${featured.map(product => `
+          <article class="featured-product">
+            <div class="featured-product-image">
+              ${
+                product.image
+                  ? `<img src="${esc(product.image)}"
+                         loading="lazy"
+                         alt="${esc(product.short || product.name || product.sku)}">`
+                  : `<div class="image-placeholder">▧</div>`
+              }
+            </div>
+
+            <div class="featured-product-info">
+              <strong>
+                ${esc(product.short || product.name || product.sku)}
+              </strong>
+
+              <small>${t('sku')}: ${esc(product.sku)}</small>
+
+              <div class="product-price">${money(product.price)}</div>
+
+              <button class="add-button"
+                      data-add="${esc(product.sku)}">
+                ＋ ${t('addToCart')}
+              </button>
+            </div>
+          </article>
+        `).join('')}
+      </div>
+    </section>
+  `;
+}
+
 
 function renderProducts() {
   const query = $('searchInput').value.trim();
@@ -623,7 +707,9 @@ function renderProducts() {
   }
 
   currentProductList = list;
-  renderedProductCount = 0;
+renderedProductCount = 0;
+
+resetFeaturedProducts();
 
   $('resultCount').textContent = resultLabel(result, list);
   renderRefine(result);
@@ -635,6 +721,7 @@ function renderProducts() {
 
   appendProductBatch();
 }
+
 
 
 function appendProductBatch() {
@@ -652,41 +739,54 @@ function appendProductBatch() {
 
   const batch = currentProductList.slice(start, end);
 
-  host.insertAdjacentHTML('beforeend', batch.map(product => `
-    <article class="product-card">
-      <div class="media">
-        ${
-          product.image
-            ? `<img
-                class="product-image"
-                src="${esc(product.image)}"
-                loading="lazy"
-                referrerpolicy="no-referrer"
-                onerror="this.outerHTML='<div class=&quot;image-placeholder&quot;>▧</div>'"
-              >`
-            : `<div class="image-placeholder">▧</div>`
-        }
-      </div>
+  let html = '';
 
-      <div class="product-info">
-        <div class="product-name">
-          ${esc(product.short || product.name || product.sku)}
+  batch.forEach((product, index) => {
+    html += `
+      <article class="product-card">
+        <div class="media">
+          ${
+            product.image
+              ? `<img
+                  class="product-image"
+                  src="${esc(product.image)}"
+                  loading="lazy"
+                  referrerpolicy="no-referrer"
+                  onerror="this.outerHTML='<div class=&quot;image-placeholder&quot;>▧</div>'"
+                >`
+              : `<div class="image-placeholder">▧</div>`
+          }
         </div>
 
-        <div class="product-sku">${t('sku')}: ${esc(product.sku)}</div>
+        <div class="product-info">
+          <div class="product-name">
+            ${esc(product.short || product.name || product.sku)}
+          </div>
 
-        <div class="product-variation">
-          ${esc(product.variation || product.notes || '')}
+          <div class="product-sku">${t('sku')}: ${esc(product.sku)}</div>
+
+          <div class="product-variation">
+            ${esc(product.variation || product.notes || '')}
+          </div>
+
+          <div class="product-price">${money(product.price)}</div>
+
+          <button class="add-button" data-add="${esc(product.sku)}">
+            ＋ ${t('addToCart')}
+          </button>
         </div>
+      </article>
+    `;
 
-        <div class="product-price">${money(product.price)}</div>
+    const absolutePosition = start + index + 1;
 
-        <button class="add-button" data-add="${esc(product.sku)}">
-          ＋ ${t('addToCart')}
-        </button>
-      </div>
-    </article>
-  `).join(''));
+    // Insert a featured carousel after every 25 products.
+    if (absolutePosition % FEATURED_INTERVAL === 0) {
+      html += createFeaturedCarousel();
+    }
+  });
+
+  host.insertAdjacentHTML('beforeend', html);
 
   renderedProductCount = end;
 
@@ -698,6 +798,7 @@ function appendProductBatch() {
     });
   });
 }
+
 
 // Automatically load more products near the bottom.
 window.addEventListener('scroll', () => {
