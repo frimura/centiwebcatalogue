@@ -860,6 +860,8 @@ function orderText() {
   );
 
   const lines = [
+     'Halo kaak, bisa cek untuk ketersediaan produk di bawah ini?',
+     '',
     `New Order: ${id}`,
     '---------------------------------',
     'Pelanggan: Catalog Order',
