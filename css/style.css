@@ -1279,16 +1279,20 @@ main {
   line-height: 1.6;
 }
 
+
 .onboarding-intro {
+  width: 100%;
   padding: 10px 3px;
-  text-align: left;
+  text-align: center;
+  margin: auto;
 }
 
 .onboarding-intro p {
-  margin-bottom: 18px;
+  margin-bottom: 20px;
   color: var(--ink);
   font-size: 17px;
   line-height: 1.65;
+  text-align: center;
 }
 
 .onboarding-intro a {
@@ -1297,6 +1301,7 @@ main {
   font-weight: 800;
   text-decoration: none;
 }
+
 
 .onboarding-pagination {
   display: flex;
