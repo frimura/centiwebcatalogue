@@ -604,6 +604,7 @@ function shuffleByCategory(items) {
 }
 
 
+
 function renderProducts() {
   const query = $('searchInput').value.trim();
 
@@ -611,22 +612,14 @@ function renderProducts() {
 
   const result = query ? CentiSearch.search(query) : null;
 
-let list = result
-  ? result.items
-  : CentiSearch.browse(CentiSearch.count());
-
-// Randomize category groups only when browsing
-if (!query) {
-  list = shuffleByCategory(list);
-}
-
   let list = result
     ? result.items
     : CentiSearch.browse(CentiSearch.count());
 
-  // Randomize browsing order, but preserve search relevance.
+  // Randomize category order and products within each category.
+  // Only when browsing, not when searching.
   if (!query) {
-    list = shuffleProducts(list);
+    list = shuffleByCategory(list);
   }
 
   currentProductList = list;
@@ -642,6 +635,7 @@ if (!query) {
 
   appendProductBatch();
 }
+
 
 function appendProductBatch() {
   const host = $('productList');
