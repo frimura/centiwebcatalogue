@@ -568,12 +568,57 @@ function shuffleProducts(items) {
   return shuffled;
 }
 
+
+function shuffleArray(items) {
+  const result = [...items];
+
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+
+  return result;
+}
+
+function shuffleByCategory(items) {
+  const groups = new Map();
+
+  // Group products by category
+  items.forEach(product => {
+    const category = String(product.category || 'Other').trim();
+
+    if (!groups.has(category)) {
+      groups.set(category, []);
+    }
+
+    groups.get(category).push(product);
+  });
+
+  // Randomize category order
+  const categories = shuffleArray([...groups.keys()]);
+
+  // Randomize products inside each category
+  return categories.flatMap(category =>
+    shuffleArray(groups.get(category))
+  );
+}
+
+
 function renderProducts() {
   const query = $('searchInput').value.trim();
 
   CentiSearch.ensure(products);
 
   const result = query ? CentiSearch.search(query) : null;
+
+let list = result
+  ? result.items
+  : CentiSearch.browse(CentiSearch.count());
+
+// Randomize category groups only when browsing
+if (!query) {
+  list = shuffleByCategory(list);
+}
 
   let list = result
     ? result.items
