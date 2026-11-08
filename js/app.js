@@ -643,6 +643,7 @@ function getFeaturedProducts() {
   return selected;
 }
 
+
 function createFeaturedCarousel() {
   const featured = getFeaturedProducts();
   if (!featured.length) return '';
@@ -651,42 +652,53 @@ function createFeaturedCarousel() {
     <section class="featured-carousel">
       <div class="featured-carousel-heading">
         <strong>Produk Pilihan</strong>
-        <span>Jelajahi produk lainnya</span>
+        <span>Geser untuk melihat produk lainnya →</span>
       </div>
 
       <div class="featured-carousel-track">
         ${featured.map(product => `
           <article class="featured-product">
+
             <div class="featured-product-image">
               ${
                 product.image
-                  ? `<img src="${esc(product.image)}"
-                         loading="lazy"
-                         alt="${esc(product.short || product.name || product.sku)}">`
+                  ? `<img
+                      src="${esc(product.image)}"
+                      loading="lazy"
+                      alt="${esc(product.short || product.name || product.sku)}"
+                    >`
                   : `<div class="image-placeholder">▧</div>`
               }
             </div>
 
             <div class="featured-product-info">
-              <strong>
+              <div class="featured-product-name">
                 ${esc(product.short || product.name || product.sku)}
-              </strong>
+              </div>
 
-              <small>${t('sku')}: ${esc(product.sku)}</small>
+              <div class="featured-product-sku">
+                SKU: ${esc(product.sku)}
+              </div>
 
-              <div class="product-price">${money(product.price)}</div>
+              <div class="featured-product-price">
+                ${money(product.price)}
+              </div>
 
-              <button class="add-button"
-                      data-add="${esc(product.sku)}">
-                ＋ ${t('addToCart')}
+              <button
+                class="featured-add-button"
+                data-add="${esc(product.sku)}"
+              >
+                ＋ Add to Cart
               </button>
             </div>
+
           </article>
         `).join('')}
       </div>
     </section>
   `;
 }
+
 
 
 function renderProducts() {
