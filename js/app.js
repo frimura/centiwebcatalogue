@@ -180,6 +180,10 @@ let refreshTimer = null;
 let catalogRequest = null;
 let selectedProduct = null;
 let previousSearchQuery = '';
+// Infinite scrolling
+const PRODUCT_BATCH_SIZE = 50;
+let currentProductList = [];
+let renderedProductCount = 0;
 
 function readStorage(key, fallback) {
   try {
@@ -552,20 +556,64 @@ function renderRefine(result) {
    10. PRODUCT RENDERING
    ========================================================= */
 
+
+function shuffleProducts(items) {
+  const shuffled = [...items];
+
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  return shuffled;
+}
+
 function renderProducts() {
   const query = $('searchInput').value.trim();
 
   CentiSearch.ensure(products);
 
   const result = query ? CentiSearch.search(query) : null;
-  const list = result ? result.items : CentiSearch.browse(80);
+
+  let list = result
+    ? result.items
+    : CentiSearch.browse(CentiSearch.count());
+
+  // Randomize browsing order, but preserve search relevance.
+  if (!query) {
+    list = shuffleProducts(list);
+  }
+
+  currentProductList = list;
+  renderedProductCount = 0;
 
   $('resultCount').textContent = resultLabel(result, list);
   renderRefine(result);
 
   const host = $('productList');
+  host.innerHTML = '';
 
-  host.innerHTML = list.slice(0, 160).map(product => `
+  $('emptyState').classList.toggle('hidden', list.length !== 0);
+
+  appendProductBatch();
+}
+
+function appendProductBatch() {
+  const host = $('productList');
+
+  if (renderedProductCount >= currentProductList.length) {
+    return;
+  }
+
+  const start = renderedProductCount;
+  const end = Math.min(
+    start + PRODUCT_BATCH_SIZE,
+    currentProductList.length
+  );
+
+  const batch = currentProductList.slice(start, end);
+
+  host.insertAdjacentHTML('beforeend', batch.map(product => `
     <article class="product-card">
       <div class="media">
         ${
@@ -599,20 +647,30 @@ function renderProducts() {
         </button>
       </div>
     </article>
-  `).join('');
+  `).join(''));
 
-  $('emptyState').classList.toggle('hidden', list.length !== 0);
+  renderedProductCount = end;
 
-  if (list.length > 160) {
-    showCatalogStatus(t('first160'));
-  }
+  host.querySelectorAll('[data-add]:not([data-bound])').forEach(button => {
+    button.dataset.bound = 'true';
 
-  host.querySelectorAll('[data-add]').forEach(button => {
     button.addEventListener('click', () => {
       openQuantitySelector(button.dataset.add);
     });
   });
 }
+
+// Automatically load more products near the bottom.
+window.addEventListener('scroll', () => {
+  const nearBottom =
+    window.innerHeight + window.scrollY >=
+    document.documentElement.scrollHeight - 700;
+
+  if (nearBottom) {
+    appendProductBatch();
+  }
+}, { passive: true });
+
 
 /* =========================================================
    11. PRODUCT QUANTITY SELECTOR
