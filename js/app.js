@@ -9,7 +9,7 @@ const CONFIG = {
   spreadsheetId: '1wTJRGfmdAARp9d_qNNQ1UUUssuNo5p9tarxPiYllGLo',
   gid: '0',
   currency: 'IDR',
-  whatsappNumber: '628XXXXXXXXXX', // Replace with the CS WhatsApp number (country code, digits only).
+  whatsappNumber: '6287877888865', // Replace with the CS WhatsApp number (country code, digits only).
   cacheKey: 'centi_catalog_rows_v1',
   cartKey: 'centi_catalog_cart_v1',
   refreshInterval: 5 * 60 * 1000
