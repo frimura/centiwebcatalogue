@@ -82,7 +82,7 @@ button:disabled {
   align-items: center;
   justify-content: center;
 
-  width: min(100%, 360px);
+  width: min(100%, 460px);
   margin: 0 auto;
 }
 
@@ -119,7 +119,7 @@ button:disabled {
   }
 
   .brand {
-    width: min(75%, 260px);
+    width: min(78%, 320px);
   }
 
   .brand-subtitle {
