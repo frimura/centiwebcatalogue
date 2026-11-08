@@ -365,6 +365,30 @@ async function fetchCatalogFromGoogleSheets() {
   return rows;
 }
 
+function showCatalogStatus(message, isError = false) {
+  $('status').textContent = message;
+  $('status').classList.toggle('error', isError);
+}
+
+function showCachedCatalog(error) {
+  const cachedRows = readStorage(CONFIG.cacheKey, null);
+
+  if (!Array.isArray(cachedRows) || !cachedRows.length) {
+    return false;
+  }
+
+  products = cachedRows;
+
+  showCatalogStatus(
+    `${t('usingSavedCatalog')} (${products.length.toLocaleString('id-ID')} ${t('products')}). ` +
+    `${t('refreshFailed')}: ${error.message}`,
+    true
+  );
+
+  renderProducts();
+  return true;
+}
+
 async function loadCatalog(options = {}) {
   const { silent = false } = options;
 
