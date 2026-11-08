@@ -225,6 +225,18 @@ function esc(value) {
   })[char]);
 }
 
+function isSkuMasked(sku) {
+  const masked = Array.isArray(window.CENTI_SKU_MASK)
+    ? window.CENTI_SKU_MASK
+    : [];
+
+  const normalizedSku = String(sku || '').trim().toUpperCase();
+
+  return masked.some(value =>
+    String(value || '').trim().toUpperCase() === normalizedSku
+  );
+}
+
 /* =========================================================
    6. GOOGLE SHEETS CSV PARSING
    ========================================================= */
@@ -307,7 +319,8 @@ function normalize(rows) {
         columns.category >= 0 ? row[columns.category] || '' : ''
       ).trim()
     }))
-    .filter(product => product.sku);
+        }))
+    .filter(product => product.sku && !isSkuMasked(product.sku));
 }
 
 /* =========================================================
@@ -715,9 +728,10 @@ function saveCart() {
 }
 
 function cartValues() {
-  return Object.values(cart).filter(item => item.qty > 0);
+  return Object.values(cart).filter(item =>
+    item.qty > 0 && !isSkuMasked(item.sku)
+  );
 }
-
 function updateCartBadge() {
   const count = cartValues().reduce((sum, item) => sum + item.qty, 0);
 
