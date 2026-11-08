@@ -46,8 +46,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
   close.addEventListener('click', closeOnboarding);
 
-  // Always show the onboarding when the page loads.
+ // Show onboarding once per calendar day.
+const today = new Date().toLocaleDateString('en-CA');
+
+let lastShown = '';
+
+try {
+  lastShown = localStorage.getItem('centiOnboardingLastShown') || '';
+} catch (error) {}
+
+if (lastShown !== today) {
   overlay.classList.remove('hidden');
 
-  showSlide(0);
+  try {
+    localStorage.setItem('centiOnboardingLastShown', today);
+  } catch (error) {}
+}
+
+showSlide(0);
 });
