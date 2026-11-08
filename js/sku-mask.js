@@ -10,6 +10,7 @@
 window.CENTI_SKU_MASK = [
   'addcostrod',
   '251793410',
+  'End of Active products',
   '2500370600',
   '309397224',
   '1035025941',
