@@ -172,6 +172,42 @@ const CSV_URL =
   `https://docs.google.com/spreadsheets/d/${CONFIG.spreadsheetId}/export?format=csv&gid=${CONFIG.gid}`;
 
 let products = [];
+let sharedProductHandled = false;
+
+function openSharedProduct() {
+  if (sharedProductHandled || !products.length) return;
+
+  const sku = new URLSearchParams(window.location.search).get('sku');
+  if (!sku) {
+    sharedProductHandled = true;
+    return;
+  }
+
+  const product = products.find(item =>
+    item.sku.trim().toUpperCase() === sku.trim().toUpperCase()
+  );
+
+  // Leave it unhandled if the SKU was not found yet, so a later catalog load can retry.
+  if (!product) return;
+
+  sharedProductHandled = true;
+  $('searchInput').value = product.sku;
+  previousSearchQuery = product.sku;
+  renderProducts();
+
+  requestAnimationFrame(() => {
+    const card = [...$('productList').querySelectorAll('[data-product-sku]')]
+      .find(item => item.dataset.productSku === product.sku);
+
+    if (card) {
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      card.style.outline = '3px solid #8f0010';
+      card.style.outlineOffset = '4px';
+    }
+
+    openQuantitySelector(product.sku);
+  });
+}
 let cart = readStorage(CONFIG.cartKey, {});
 
 let toastTimer;
@@ -403,6 +439,7 @@ function showCachedCatalog(error) {
   );
 
   renderProducts();
+   openSharedProduct();
   return true;
 }
 
@@ -438,6 +475,7 @@ async function loadCatalog(options = {}) {
       );
 
       renderProducts();
+       openSharedProduct();
       return true;
 
     } catch (error) {
@@ -734,8 +772,11 @@ resetFeaturedProducts();
   appendProductBatch();
 }
 
-
-
+function productUrl(sku) {
+  const url = new URL(window.location.href);
+  url.searchParams.set('sku', sku);
+  return url.toString();
+}
 function appendProductBatch() {
   const host = $('productList');
 
@@ -755,7 +796,7 @@ function appendProductBatch() {
 
   batch.forEach((product, index) => {
     html += `
-      <article class="product-card">
+      <article class="product-card" data-product-sku="${esc(product.sku)}">
         <div class="media">
           ${
             product.image
@@ -776,7 +817,9 @@ function appendProductBatch() {
           </div>
 
           <div class="product-sku">${t('sku')}: ${esc(product.sku)}</div>
-
+         <button class="share-button" type="button" data-share="${esc(product.sku)}">
+  Copy product link
+</button>
           <div class="product-variation">
             ${esc(product.variation || product.notes || '')}
           </div>
@@ -809,6 +852,18 @@ function appendProductBatch() {
       openQuantitySelector(button.dataset.add);
     });
   });
+   host.querySelectorAll('[data-share]:not([data-bound])').forEach(button => {
+  button.dataset.bound = 'true';
+
+  button.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(productUrl(button.dataset.share));
+      showToast('Product link copied');
+    } catch (error) {
+      showToast('Could not copy link. Copy it from the address bar instead.');
+    }
+  });
+});
 }
 
 
@@ -1317,15 +1372,7 @@ function initializeApp() {
   });
 
   if ('serviceWorker' in navigator) {
-    let refreshing = false;
     let swRegistration;
-
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (refreshing) return;
-
-      refreshing = true;
-      window.location.reload();
-    });
 
     async function checkForUpdates() {
       if (!navigator.onLine || !swRegistration) return;
