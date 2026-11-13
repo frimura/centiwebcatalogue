@@ -1671,15 +1671,15 @@ main {
   gap: 8px;
   width: 100%;
   min-height: 30px;
-  margin-top: 10px;
-  padding: 10px 14px;
+  margin-top: 8px;
+  padding: 8px 10px;
   border: 1px solid #d9a7ac;
   border-radius: 10px;
   background: #fff;
   color: #8f0010;
   font-family: inherit;
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 300;
   cursor: pointer;
   transition: background-color 150ms ease, border-color 150ms ease,
               transform 150ms ease, box-shadow 150ms ease;
@@ -1687,7 +1687,7 @@ main {
 
 .share-button::before {
   content: "⧉";
-  font-size: 0.8rem;
+  font-size: 0.5rem;
   line-height: 1;
 }
 
