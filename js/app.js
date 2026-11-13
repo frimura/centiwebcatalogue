@@ -816,13 +816,10 @@ function appendProductBatch() {
             ${esc(product.short || product.name || product.sku)}
           </div>
 
-          <div class="product-sku">${t('sku')}: ${esc(product.sku)}</div>
          <button class="share-button" type="button" data-share="${esc(product.sku)}">
   Copy product link
 </button>
-          <div class="product-variation">
-            ${esc(product.variation || product.notes || '')}
-          </div>
+         
 
           <div class="product-price">${money(product.price)}</div>
 
