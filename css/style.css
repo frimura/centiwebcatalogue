@@ -1670,7 +1670,7 @@ main {
   justify-content: center;
   gap: 8px;
   width: 100%;
-  min-height: 42px;
+  min-height: 30px;
   margin-top: 10px;
   padding: 10px 14px;
   border: 1px solid #d9a7ac;
@@ -1687,7 +1687,7 @@ main {
 
 .share-button::before {
   content: "⧉";
-  font-size: 1.1rem;
+  font-size: 0.8rem;
   line-height: 1;
 }
 
