@@ -215,6 +215,18 @@
     </div>
   </aside>
   <div id="toast" class="toast" role="status"></div>
+  <dialog id="locationDialog" aria-labelledby="locationTitle">
+  <h2 id="locationTitle">Pilih lokasi pesanan</h2>
+  <label for="orderLocation">Lokasi</label>
+  <select id="orderLocation">
+    <option value="Pusat">Jogja (Pusat)</option>
+    <option value="Cabang Solo">Solo (Cabang Solo)</option>
+  </select>
+  <button type="button" onclick="document.getElementById('locationDialog').close()">
+    Batal
+  </button>
+  <button id="confirmLocation" type="button">Lanjut ke WhatsApp</button>
+</dialog>
   <script src="js/sku-mask.js"></script>
 <script src="js/search.js"></script>
 <script src="js/app.js"></script>
