@@ -1144,9 +1144,8 @@ function orderText(location) {
     'Requested by: Online Catalog',
     `Lokasi: ${location}`,
     'No : Mobile Catalog',
-     ' ',
-   'Pesanan:',
-     ' '
+     '',
+   'Pesanan:'
   ];
 
   for (const item of items) {
