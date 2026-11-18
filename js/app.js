@@ -1140,8 +1140,8 @@ function orderText(location) {
      '',
         `New Order: ${id}`,
     '---------------------------------',
-    'Pelanggan: CENTI - Offline Store',
-    'Requested by: Lukman',
+    'Pelanggan: CENTI - WA Channel',
+    'Requested by: Online Catalog',
     `Lokasi: ${location}`,
     'No : Mobile Catalog',
   ];
