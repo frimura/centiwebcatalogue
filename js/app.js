@@ -1124,7 +1124,7 @@ function emptyCart() {
    13. WHATSAPP ORDER
    ========================================================= */
 
-function orderText() {
+function orderText(location) {
   const items = cartValues();
 
   const id = 'CAT-' +
@@ -1138,12 +1138,12 @@ function orderText() {
   const lines = [
      'Halo kaak, bisa cek untuk ketersediaan produk di bawah ini?',
      '',
-    `New Order: ${id}`,
+        `New Order: ${id}`,
     '---------------------------------',
-    'Pelanggan: Catalog Order',
+    'Pelanggan: CENTI - Offline Store',
+    'Requested by: Lukman',
+    `Lokasi: ${location}`,
     'No : Mobile Catalog',
-    '',
-    'Pesanan :'
   ];
 
   for (const item of items) {
@@ -1165,7 +1165,9 @@ function orderText() {
   };
 }
 
-function sendOrder() {
+function openLocationChooser() {
+  $('locationDialog').showModal();
+}
   const items = cartValues();
   if (!items.length) return;
 
@@ -1177,7 +1179,7 @@ function sendOrder() {
     return;
   }
 
-  const text = orderText().text;
+  const text = orderText(location).text;
   const whatsappUrl = `https://wa.me/${number}?text=${encodeURIComponent(text)}`;
   window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
   showToast(currentLanguage === 'id'
@@ -1320,7 +1322,13 @@ function bindEvents() {
   $('closeCart').onclick = closeCart;
   $('cartOverlay').onclick = closeCart;
 
-  $('sendOrder').onclick = sendOrder;
+ $('sendOrder').onclick = openLocationChooser;
+
+$('confirmLocation').onclick = () => {
+  const location = $('orderLocation').value;
+  $('locationDialog').close();
+  sendOrder(location);
+};
 
 
   $('emptyCart').onclick = emptyCart;
