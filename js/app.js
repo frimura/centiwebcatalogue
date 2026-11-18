@@ -1325,12 +1325,15 @@ function bindEvents() {
 
  $('sendOrder').onclick = openLocationChooser;
 
-$('confirmLocation').onclick = () => {
-  const location = $('orderLocation').value;
+$('chooseJogja').onclick = () => {
   $('locationDialog').close();
-  sendOrder(location);
+  sendOrder('Pusat');
 };
 
+$('chooseSolo').onclick = () => {
+  $('locationDialog').close();
+  sendOrder('Cabang Solo');
+};
 
   $('emptyCart').onclick = emptyCart;
 
