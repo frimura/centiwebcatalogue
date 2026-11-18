@@ -215,18 +215,55 @@
     </div>
   </aside>
   <div id="toast" class="toast" role="status"></div>
-  <dialog id="locationDialog" aria-labelledby="locationTitle">
-  <h2 id="locationTitle">Pilih lokasi pesanan</h2>
-  <label for="orderLocation">Lokasi</label>
-  <select id="orderLocation">
-    <option value="Pusat">Jogja (Pusat)</option>
-    <option value="Cabang Solo">Solo (Cabang Solo)</option>
-  </select>
-  <button type="button" onclick="document.getElementById('locationDialog').close()">
-    Batal
-  </button>
-  <button id="confirmLocation" type="button">Lanjut ke WhatsApp</button>
+  <dialog id="locationDialog" class="branch-dialog" aria-labelledby="branchTitle">
+  <h2 id="branchTitle">Pilih cek di cabang mana</h2>
+  <div class="branch-buttons">
+    <button id="chooseJogja" type="button">Jogja</button>
+    <button id="chooseSolo" type="button">Solo</button>
+  </div>
 </dialog>
+
+<style>
+  .branch-dialog {
+    width: min(90vw, 360px);
+    padding: 24px;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    box-shadow: 0 20px 60px #0003;
+    font-family: inherit;
+  }
+
+  .branch-dialog::backdrop {
+    background: #11182780;
+    backdrop-filter: blur(3px);
+  }
+
+  .branch-dialog h2 {
+    margin: 0 0 20px;
+    font-size: 20px;
+  }
+
+  .branch-buttons {
+    display: flex;
+    gap: 12px;
+  }
+
+  .branch-buttons button {
+    flex: 1;
+    padding: 13px;
+    border: 0;
+    border-radius: 10px;
+    background: #16a765;
+    color: white;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .branch-buttons button:hover {
+    background: #128451;
+  }
+</style>
   <script src="js/sku-mask.js"></script>
 <script src="js/search.js"></script>
 <script src="js/app.js"></script>
