@@ -1168,6 +1168,7 @@ function orderText(location) {
 function openLocationChooser() {
   $('locationDialog').showModal();
 }
+function sendOrder(location) {
   const items = cartValues();
   if (!items.length) return;
 
