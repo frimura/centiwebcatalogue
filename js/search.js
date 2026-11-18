@@ -29,7 +29,8 @@
     autoCorrect: true,                // typo correction when nothing matches
     partialMatch: true,               // last resort: show items matching all but one word
     maxChips: 14,
-    chipStopwords: []
+    chipStopwords: [],    
+    gluedPrefixes: []
   };
 
   const BASE_CHIP_STOP = ['warna', 'per', 'with', 'to', 'tipe', 'type', 'size', 'set', 'only',
@@ -67,6 +68,23 @@
     for (let t of normalize(text).split(' ')) {
       t = t.replace(/^\.+|\.+$/g, '');
       if (t) out.push(t);
+    }
+    return out;
+  }
+    // "bautbuttonm3" -> "baut button m3", using options.gluedPrefixes from the rules file
+  function expandGlued(tokens) {
+    const list = (rules.options.gluedPrefixes || [])
+      .map(p => ({ words: tokenize(p), compact: tokenize(p).join('') }))
+      .filter(p => p.words.length > 1)
+      .sort((a, b) => b.compact.length - a.compact.length);   // longest prefix first
+    if (!list.length) return tokens;
+    const out = [];
+    for (const t of tokens) {
+      const hit = list.find(p => t.startsWith(p.compact));
+      if (!hit) { out.push(t); continue; }
+      out.push(...hit.words);
+      const rest = t.slice(hit.compact.length);
+      if (rest) out.push(rest);
     }
     return out;
   }
@@ -334,25 +352,28 @@ function expandSameSubgroup(hits) {
   function runRanked(groups, tokens) {
     allowPrefix1 = groups.length === 1;
     const cats = detectedCategories(tokens);
-    const prefixes = cats.flatMap(c => CATEGORY_PREFIXES[c] || []);
+        const prefixes = cats.flatMap(c => (rules.categories[c] && rules.categories[c].codePrefixes) || []);
     const out = [];
 
     for (const d of docs) {
       if (hideSet.has(d.key)) continue;
 
-      let total = 0, matched = 0, mainMatched = 0, fullMatched = 0;
+           let total = 0, matched = 0, mainMatched = 0, fullMatched = 0;
       let exactDimensions = 0, partialDimensions = 0, bonus = 0, prev = -9;
+      let textGroups = 0, textMatched = 0;
 
       for (let g = 0; g < groups.length; g++) {
         const main = scoreGroup(groups[g], d.main);
         const full = scoreGroup(groups[g], d.full);
-        const r = main.s >= full.s ? main : full;
+                const r = main.s >= full.s ? main : full;
+        const queryHasNumber = groups[g].alts.some(a => a.toks.some(t => !!t.n));
+        if (!queryHasNumber) textGroups++;
         if (r.s > 0) {
           matched++;
           total += r.s;
           if (main.s > 0) mainMatched++;
           else fullMatched++;
-          const queryHasNumber = groups[g].alts.some(a => a.toks.some(t => !!t.n));
+          if (!queryHasNumber) textMatched++;
           if (queryHasNumber) {
             if (r.s >= 95) exactDimensions++;
             else partialDimensions++;
@@ -373,14 +394,17 @@ function expandSameSubgroup(hits) {
       const categoryMatch = prefixes.some(prefix => code.startsWith(prefix));
       // Keep every item in a requested category, even if its title has no
       // matching dimensions or wording. Text/dimension matches rank within it.
-      if (!matched && !categoryMatch) continue;
+            if (!matched) continue;
+      // when the query has real words (not just sizes), at least one must match
+      if (textGroups > 0 && textMatched === 0) continue;
 
       const coverage = matched / Math.max(1, groups.length);
       let score = total + bonus + matched * 38;
       score += coverage * 100;
       score += mainMatched * 12;
       score -= fullMatched * 3;
-      score += exactDimensions * 32 + partialDimensions * 8;
+            score += exactDimensions * 32 + partialDimensions * 8;
+      if (textGroups > 0) score += textMatched * 120;   // words matter more than sizes
       if (categoryMatch) score += 420;
       if (matched === groups.length) score += 90;
       if (matched === 0 && categoryMatch) score += 0;
@@ -393,12 +417,10 @@ function expandSameSubgroup(hits) {
       });
     }
 
-    out.sort((a, b) =>
-      (Number(b.categoryMatch) - Number(a.categoryMatch)) ||
-      (b.dimensionMatches - a.dimensionMatches) ||
-      (b.dimensionExact - a.dimensionExact) ||
+        out.sort((a, b) =>
       (b.score - a.score) ||
       (b.matched - a.matched) ||
+      (b.dimensionExact - a.dimensionExact) ||
       collator.compare(a.d.title, b.d.title) ||
       (a.d.i - b.d.i)
     );
@@ -498,17 +520,18 @@ function expandSameSubgroup(hits) {
     let tokens = tokenize(raw);
     const kept = tokens.filter(t => !ignoreSet.has(t));
     if (kept.length) tokens = kept;
+        tokens = expandGlued(tokens);
     if (!tokens.length) return {
       items: [], total: 0, mode: 'none', corrected: null,
       words: [], skip: new Set()
     };
 
-    let groups = buildGroups(tokens);
-let hits = runRanked(groups, tokens);
+        let groups = buildGroups(tokens);
+    let hits = runRanked(groups, tokens);
 
-if (hits.length) {
-  hits = expandSameSubgroup(hits);
-}
+    if (hits.length && rules.options.expandSubgroup) {
+      hits = expandSameSubgroup(hits);
+    }
 
     // Only use typo correction when the original query produced no result.
     let fixed = null;
@@ -519,7 +542,7 @@ if (hits.length) {
 let correctedHits = runRanked(correctedGroups, fixed);
 
 if (correctedHits.length) {
-  correctedHits = expandSameSubgroup(correctedHits);
+  if (rules.options.expandSubgroup) correctedHits = expandSameSubgroup(correctedHits);
 
   groups = correctedGroups;
   tokens = fixed;
