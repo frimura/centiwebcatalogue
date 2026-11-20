@@ -1705,3 +1705,8 @@ main {
   outline: 3px solid rgb(143 0 16 / 25%);
   outline-offset: 2px;
 }
+.product-price.price-down,
+.featured-product-price.price-down { color: #0d9488; }  /* cheaper: teal */
+
+.product-price.price-up,
+.featured-product-price.price-up { color: #dc2626; }    /* pricier: red */
