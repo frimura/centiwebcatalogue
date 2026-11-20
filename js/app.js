@@ -712,7 +712,7 @@ function createFeaturedCarousel() {
         ${featured.map(product => `
           <article class="featured-product">
 
-            <div class="featured-product-image">
+                <div class="featured-product-image" data-add="${esc(product.sku)}">
               ${
                 product.image
                   ? `<img
@@ -812,7 +812,7 @@ function appendProductBatch() {
   batch.forEach((product, index) => {
     html += `
       <article class="product-card" data-product-sku="${esc(product.sku)}">
-        <div class="media">
+         <div class="media" data-add="${esc(product.sku)}">
           ${
             product.image
               ? `<img
@@ -899,6 +899,7 @@ function openQuantitySelector(sku) {
   const product = products.find(item => item.sku === sku);
   if (!product) return;
 
+   activatePanelBackGuard();
   selectedProduct = product;
 
   $('quantityProductName').textContent =
@@ -939,7 +940,9 @@ function openQuantitySelector(sku) {
 function closeQuantitySelector() {
   $('quantityOverlay').classList.add('hidden');
   $('quantityPanel').classList.add('hidden');
-  selectedProduct = null;
+   
+    selectedProduct = null;
+  releasePanelBackGuard();
 }
 
 function updateQuantitySubtotal() {
@@ -1214,6 +1217,7 @@ function sendOrder(location) {
    ========================================================= */
 
 function openCart() {
+  activatePanelBackGuard();
   $('cartOverlay').classList.remove('hidden');
   $('cartPanel').classList.add('open');
   $('cartPanel').setAttribute('aria-hidden', 'false');
@@ -1223,6 +1227,7 @@ function closeCart() {
   $('cartOverlay').classList.add('hidden');
   $('cartPanel').classList.remove('open');
   $('cartPanel').setAttribute('aria-hidden', 'true');
+  releasePanelBackGuard();
 }
 
 function showToast(message) {
@@ -1234,6 +1239,35 @@ function showToast(message) {
   toastTimer = setTimeout(() => {
     $('toast').classList.remove('show');
   }, 2600);
+
+   // Mobile Back button: closes the open panel instead of leaving the page
+let panelBackGuardActive = false;
+
+function activatePanelBackGuard() {
+  if (panelBackGuardActive) return;
+
+  history.pushState({ centiPanel: true }, '', location.href);
+  panelBackGuardActive = true;
+}
+
+function releasePanelBackGuard() {
+  if (!panelBackGuardActive) return;
+
+  panelBackGuardActive = false;
+  history.back();
+}
+
+window.addEventListener('popstate', () => {
+  if (!panelBackGuardActive) return;
+
+  panelBackGuardActive = false;
+
+  if ($('cartPanel').classList.contains('open')) {
+    closeCart();
+  } else if (!$('quantityPanel').classList.contains('hidden')) {
+    closeQuantitySelector();
+  }
+});
 }
 
 /* =========================================================
