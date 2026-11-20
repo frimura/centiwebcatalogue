@@ -1710,3 +1710,12 @@ main {
 
 .product-price.price-up,
 .featured-product-price.price-up { color: #dc2626; }    /* pricier: red */
+
+/* Clickable product pictures */
+.product-card .media,
+.featured-product-image {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.product-card .media:active,
+.featured-product-image:active { opacity: .8; }
