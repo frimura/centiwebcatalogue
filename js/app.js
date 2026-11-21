@@ -1239,7 +1239,7 @@ function showToast(message) {
   toastTimer = setTimeout(() => {
     $('toast').classList.remove('show');
   }, 2600);
-
+}
    // Mobile Back button: closes the open panel instead of leaving the page
 let panelBackGuardActive = false;
 
