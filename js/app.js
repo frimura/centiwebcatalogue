@@ -1268,7 +1268,6 @@ window.addEventListener('popstate', () => {
     closeQuantitySelector();
   }
 });
-}
 
 /* =========================================================
    15. EVENT LISTENERS
